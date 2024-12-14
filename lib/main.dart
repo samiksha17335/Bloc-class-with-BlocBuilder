@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_practise_for_av/bloc/bloc.dart';
 import 'package:flutter_practise_for_av/bloc/counter_event.dart';
 import 'package:flutter_practise_for_av/bloc/counter_state.dart';
+import 'package:flutter_practise_for_av/visiblity_bloc/visibility_state.dart';
+import 'package:flutter_practise_for_av/visiblity_bloc/visiblity_event.dart';
+import 'package:flutter_practise_for_av/visiblity_bloc/visiblitybloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,10 +23,21 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: BlocProvider<CounterBloc>(
-        // lazy: true,
-        create: (BuildContext context) => CounterBloc(),
+      home: MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context)=>CounterBloc()),
+        BlocProvider(create: (context)=>Visiblitybloc())
+      ],
       child:const MyHomePage(title: 'Flutter Demo Home Page'),
+
+        //another technique to use multiple blic without Multi bloc provider
+    //       BlocProvider<CounterBloc>(
+    //         create: (BuildContext context)=>CounterBloc(),
+    //       child:BlocProvider<Visiblitybloc>(
+    //         create: (BuildContextcontext)=>Visiblitybloc() ,
+    //         child: const MyHomePage(title: 'Flutter Demo Home Page'))
+    // )
+    //
       )
     );
   }
@@ -70,7 +84,19 @@ class _MyHomePageState extends State<MyHomePage> {
               state.count.toString(),
               style: Theme.of(context).textTheme.headlineMedium,
             );
-                })
+                }),
+            BlocBuilder<Visiblitybloc,VisibilityState>(
+              builder: (context, state) {
+                return Visibility(
+                visible: state.type,
+                child: Container(
+                height: 200,
+                width: 200,
+                color: Colors.purple,
+                ));
+              },
+
+            )
           ],
         ),
       ),
@@ -91,8 +117,21 @@ class _MyHomePageState extends State<MyHomePage> {
     tooltip: 'decrement',
     child: const Icon(Icons.minimize),
     ),
+          FloatingActionButton(
+            onPressed: (){
+              context.read<Visiblitybloc>().add(VisiblityShowEvent());
+            },
+            child: Text("SHow"),
+          ),
+          FloatingActionButton(
+            onPressed: (){
+              context.read<Visiblitybloc>().add(VisiblityHideEvent());
+            },
+            child: Text("Hide"),
+          ),
 
-    ] )// This trailing comma makes auto-formatting nicer for build methods.
+
+        ] )// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

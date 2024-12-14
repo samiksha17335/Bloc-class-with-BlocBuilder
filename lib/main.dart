@@ -96,6 +96,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ));
               },
 
+            ),
+            BlocListener<CounterBloc,CounterState>(
+                listener: (context,state){
+              if(state.count==3){
+                ScaffoldMessenger.of(context).
+                showSnackBar(
+                    SnackBar(
+                        content: Text("counter value is 3"),
+                      backgroundColor: Colors.red,
+
+                    ));
+              }
+            },
+              child: Text("hii"),
+
             )
           ],
         ),

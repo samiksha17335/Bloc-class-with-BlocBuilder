@@ -20,7 +20,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: BlocProvider<CounterBloc>(
+        // lazy: true,
+        create: (BuildContext context) => CounterBloc(),
+      child:const MyHomePage(title: 'Flutter Demo Home Page'),
+      )
     );
   }
 }
@@ -36,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-final counterplusBloc=CounterBloc();
+// final counterplusBloc=CounterBloc();
 // final counterminusBloc=CounterDecrementEvent();
   @override
   Widget build(BuildContext context) {
@@ -55,12 +59,12 @@ final counterplusBloc=CounterBloc();
             ),
             BlocBuilder<CounterBloc,CounterState>(
               buildWhen: (previous,current){
-                previous.count;
-                current.count;
+                print('previous count: ${previous.count}');
+                print('current count: ${current.count}');
                 return true;
 
               },
-              bloc: counterplusBloc,
+              // bloc: counterplusBloc,
                 builder: (context,state){
             return Text(
               state.count.toString(),
@@ -75,14 +79,14 @@ final counterplusBloc=CounterBloc();
         children:[
           FloatingActionButton(
           onPressed: (){
-             counterplusBloc.add(CounterIncrementEvent());
+            context.read<CounterBloc>().add(CounterIncrementEvent());
           },
           tooltip: 'Increment',
           child: const Icon(Icons.add),
         ),
     FloatingActionButton(
     onPressed: (){
-    counterplusBloc.add(CounterDecrementEvent());
+    context.read<CounterBloc>().add(CounterDecrementEvent());
     },
     tooltip: 'decrement',
     child: const Icon(Icons.minimize),

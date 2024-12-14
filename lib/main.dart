@@ -18,28 +18,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context)=>CounterBloc()),
-        BlocProvider(create: (context)=>Visiblitybloc())
-      ],
-      child:const MyHomePage(title: 'Flutter Demo Home Page'),
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => CounterBloc()),
+            BlocProvider(create: (context) => Visiblitybloc())
+          ],
+          child: const MyHomePage(title: 'Flutter Demo Home Page'),
 
-        //another technique to use multiple blic without Multi bloc provider
-    //       BlocProvider<CounterBloc>(
-    //         create: (BuildContext context)=>CounterBloc(),
-    //       child:BlocProvider<Visiblitybloc>(
-    //         create: (BuildContextcontext)=>Visiblitybloc() ,
-    //         child: const MyHomePage(title: 'Flutter Demo Home Page'))
-    // )
-    //
-      )
-    );
+          //another technique to use multiple blic without Multi bloc provider
+          //       BlocProvider<CounterBloc>(
+          //         create: (BuildContext context)=>CounterBloc(),
+          //       child:BlocProvider<Visiblitybloc>(
+          //         create: (BuildContextcontext)=>Visiblitybloc() ,
+          //         child: const MyHomePage(title: 'Flutter Demo Home Page'))
+          // )
+          //
+        ));
   }
 }
 
@@ -53,100 +52,86 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
 // final counterplusBloc=CounterBloc();
 // final counterminusBloc=CounterDecrementEvent();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            BlocBuilder<CounterBloc,CounterState>(
-              buildWhen: (previous,current){
-                print('previous count: ${previous.count}');
-                print('current count: ${current.count}');
-                return true;
-
-              },
-              // bloc: counterplusBloc,
-                builder: (context,state){
-            return Text(
-              state.count.toString(),
-              style: Theme.of(context).textTheme.headlineMedium,
-            );
-                }),
-            BlocBuilder<Visiblitybloc,VisibilityState>(
-              builder: (context, state) {
-                return Visibility(
-                visible: state.type,
-                child: Container(
-                height: 200,
-                width: 200,
-                color: Colors.purple,
-                ));
-              },
-
-            ),
-            BlocListener<CounterBloc,CounterState>(
-                listener: (context,state){
-              if(state.count==3){
-                ScaffoldMessenger.of(context).
-                showSnackBar(
-                    SnackBar(
-                        content: Text("counter value is 3"),
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'You have pushed the button this many times:',
+              ),
+              BlocConsumer<CounterBloc, CounterState>(
+                buildWhen: (previous, current) {
+                  print('previous count: ${previous.count}');
+                  print('current count: ${current.count}');
+                  return true;
+                },
+                builder: (context, state) {
+                  return Text(
+                    state.count.toString(),
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  );
+                },
+                listener: (BuildContext context, CounterState state) {
+                  if (state.count == 3) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("counter value is 3"),
                       backgroundColor: Colors.red,
-
                     ));
-              }
+                  }
+                },
+              ),
+              BlocBuilder<Visiblitybloc, VisibilityState>(
+                builder: (context, state) {
+                  return Visibility(
+                      visible: state.type,
+                      child: Container(
+                        height: 200,
+                        width: 200,
+                        color: Colors.purple,
+                      ));
+                },
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          FloatingActionButton(
+            onPressed: () {
+              context.read<CounterBloc>().add(CounterIncrementEvent());
             },
-              child: Text("hii"),
-
-            )
-          ],
-        ),
-      ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children:[
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
           FloatingActionButton(
-          onPressed: (){
-            context.read<CounterBloc>().add(CounterIncrementEvent());
-          },
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
-    FloatingActionButton(
-    onPressed: (){
-    context.read<CounterBloc>().add(CounterDecrementEvent());
-    },
-    tooltip: 'decrement',
-    child: const Icon(Icons.minimize),
-    ),
+            onPressed: () {
+              context.read<CounterBloc>().add(CounterDecrementEvent());
+            },
+            tooltip: 'decrement',
+            child: const Icon(Icons.minimize),
+          ),
           FloatingActionButton(
-            onPressed: (){
+            onPressed: () {
               context.read<Visiblitybloc>().add(VisiblityShowEvent());
             },
             child: Text("SHow"),
           ),
           FloatingActionButton(
-            onPressed: (){
+            onPressed: () {
               context.read<Visiblitybloc>().add(VisiblityHideEvent());
             },
             child: Text("Hide"),
           ),
-
-
-        ] )// This trailing comma makes auto-formatting nicer for build methods.
-    );
+        ]) // This trailing comma makes auto-formatting nicer for build methods.
+        );
   }
 }
